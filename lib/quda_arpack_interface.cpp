@@ -1,5 +1,7 @@
 #include <quda_arpack_interface.h>
 
+//doesn't compile with QMP. commenting out for now
+#ifndef MULTI_GPU
 //using namespace quda ;
 
   struct SortEvals{
@@ -375,4 +377,4 @@ namespace quda{
 
 }
 
-
+#endif

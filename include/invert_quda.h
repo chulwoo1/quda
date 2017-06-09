@@ -324,6 +324,14 @@ namespace quda {
 
   };
 
+  struct ChebyParam {
+
+    double hi;
+    double lo;
+    int    order; // order of polynomial, so there are (order+1) terms
+
+  };
+
   class Solver {
 
   protected:
@@ -445,6 +453,42 @@ namespace quda {
   public:
     CGNR(DiracMatrix &mat, DiracMatrix &matSloppy, SolverParam &param, TimeProfile &profile);
     virtual ~CGNR();
+
+    void operator()(ColorSpinorField &out, ColorSpinorField &in);
+  };
+
+  class Cheby  {
+
+  private:
+    const DiracMatrix &mat;
+//    const DiracMatrix &matSloppy;
+    // pointers to fields to avoid multiple creation overhead
+    ColorSpinorField *yp, *rp, *App, *tmpp;
+    std::vector<ColorSpinorField*> p;
+    bool init;
+  protected:
+    ChebyParam &param;
+    TimeProfile &profile;
+
+  public:
+    Cheby(DiracMatrix &mat, ChebyParam &param, TimeProfile &profile);
+    virtual ~Cheby();
+
+    void operator()(ColorSpinorField &out, ColorSpinorField &in);
+//    void solve(ColorSpinorField& out, ColorSpinorField& in);
+  };
+
+  class ChebyNR : public Cheby {
+
+  private:
+    DiracMdagM mdagm;
+//    DiracMdagM mdagmSloppy;
+    ColorSpinorField *bp;
+    bool init;
+
+  public:
+    ChebyNR(DiracMatrix &mat, ChebyParam &param, TimeProfile &profile);
+    virtual ~ChebyNR();
 
     void operator()(ColorSpinorField &out, ColorSpinorField &in);
   };
